@@ -10,6 +10,7 @@ load_dotenv()
 class Settings(BaseSettings):
     model_config: SettingsConfigDict = SettingsConfigDict(
         env_file=".env",
+        extra="ignore",
         env_ignore_empty=True,
         env_file_encoding="utf-8",
     )
