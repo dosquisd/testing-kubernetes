@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+  namespace: development
+  labels:
+    app: simple-crud
+    component: redis
+    environment: development
+data:
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"

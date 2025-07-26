@@ -8,3 +8,7 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Variables (uncommented just to keep them in github, but it's important to keep them in .gitignore)
+# .secrets.env
+# .env
