@@ -13,6 +13,7 @@ spec:
       app: postgres
       component: postgres
   replicas: 1
+  serviceName: postgres-service
   template:
     metadata:
       labels:
