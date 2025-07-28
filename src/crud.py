@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from typing import List, Optional
-from .models import User
-from .schemas import UserCreate, UserUpdate
-from .cache import redis_service
+from src.models import User
+from src.schemas import UserCreate, UserUpdate
+from src.core.cache import redis_service
 
 
 class UserService:

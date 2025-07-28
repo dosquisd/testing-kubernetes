@@ -1,12 +1,14 @@
 import redis
 import json
 from typing import Optional, Any
-from .config import settings
+from src.core.config import settings
 
 
 class RedisService:
     def __init__(self):
-        self.redis_client = redis.from_url(str(settings.REDIS_URI), decode_responses=True)
+        self.redis_client = redis.from_url(
+            str(settings.REDIS_URI), decode_responses=True
+        )
 
     def get(self, key: str) -> Optional[Any]:
         """Obtiene un valor del cache"""
