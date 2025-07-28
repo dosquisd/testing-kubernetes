@@ -1,5 +1,7 @@
 import secrets
 from dotenv import load_dotenv
+
+from typing import Optional
 from pydantic_core import MultiHostUrl
 from pydantic import PostgresDsn, RedisDsn, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -15,6 +17,7 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
     )
 
+    # PostgreSQL configuration
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_HOST: str = "localhost"
@@ -33,6 +36,7 @@ class Settings(BaseSettings):
             path=self.POSTGRES_DB,
         )
 
+    # Redis configuration
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
     REDIS_PASSWORD: str
@@ -47,6 +51,13 @@ class Settings(BaseSettings):
             password=self.REDIS_PASSWORD,
         )
 
+    # QuestDB configuration
+    QUESTDB_HOST: str = "localhost"
+    QUESTDB_PORT: int = 9000
+    QUESTDB_USER: Optional[str] = None
+    QUESTDB_PASSWORD: Optional[str] = None
+
+    # Server configuration
     SECRET_KEY: str = secrets.token_urlsafe(32)
     DEBUG: bool = False
 

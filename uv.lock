@@ -35,6 +35,7 @@ dependencies = [
     { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "python-dotenv" },
+    { name = "questdb" },
     { name = "redis" },
     { name = "sqlalchemy" },
 ]
@@ -46,6 +47,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.11.7" },
     { name = "pydantic-settings", specifier = ">=2.10.1" },
     { name = "python-dotenv", specifier = ">=1.1.1" },
+    { name = "questdb", specifier = ">=3.0.0" },
     { name = "redis", specifier = ">=6.2.0" },
     { name = "sqlalchemy", specifier = ">=2.0.41" },
 ]
@@ -294,6 +296,25 @@ wheels = [
 ]
 
 [[package]]
+name = "numpy"
+version = "2.3.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/37/7d/3fec4199c5ffb892bed55cff901e4f39a58c81df9c44c280499e92cad264/numpy-2.3.2.tar.gz", hash = "sha256:e0486a11ec30cdecb53f184d496d1c6a20786c81e55e41640270130056f8ee48", size = 20489306, upload-time = "2025-07-24T21:32:07.553Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/00/6d/745dd1c1c5c284d17725e5c802ca4d45cfc6803519d777f087b71c9f4069/numpy-2.3.2-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:bc3186bea41fae9d8e90c2b4fb5f0a1f5a690682da79b92574d63f56b529080b", size = 20956420, upload-time = "2025-07-24T20:28:18.002Z" },
+    { url = "https://files.pythonhosted.org/packages/bc/96/e7b533ea5740641dd62b07a790af5d9d8fec36000b8e2d0472bd7574105f/numpy-2.3.2-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:2f4f0215edb189048a3c03bd5b19345bdfa7b45a7a6f72ae5945d2a28272727f", size = 14184660, upload-time = "2025-07-24T20:28:39.522Z" },
+    { url = "https://files.pythonhosted.org/packages/2b/53/102c6122db45a62aa20d1b18c9986f67e6b97e0d6fbc1ae13e3e4c84430c/numpy-2.3.2-cp312-cp312-macosx_14_0_arm64.whl", hash = "sha256:8b1224a734cd509f70816455c3cffe13a4f599b1bf7130f913ba0e2c0b2006c0", size = 5113382, upload-time = "2025-07-24T20:28:48.544Z" },
+    { url = "https://files.pythonhosted.org/packages/2b/21/376257efcbf63e624250717e82b4fae93d60178f09eb03ed766dbb48ec9c/numpy-2.3.2-cp312-cp312-macosx_14_0_x86_64.whl", hash = "sha256:3dcf02866b977a38ba3ec10215220609ab9667378a9e2150615673f3ffd6c73b", size = 6647258, upload-time = "2025-07-24T20:28:59.104Z" },
+    { url = "https://files.pythonhosted.org/packages/91/ba/f4ebf257f08affa464fe6036e13f2bf9d4642a40228781dc1235da81be9f/numpy-2.3.2-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:572d5512df5470f50ada8d1972c5f1082d9a0b7aa5944db8084077570cf98370", size = 14281409, upload-time = "2025-07-24T20:40:30.298Z" },
+    { url = "https://files.pythonhosted.org/packages/59/ef/f96536f1df42c668cbacb727a8c6da7afc9c05ece6d558927fb1722693e1/numpy-2.3.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:8145dd6d10df13c559d1e4314df29695613575183fa2e2d11fac4c208c8a1f73", size = 16641317, upload-time = "2025-07-24T20:40:56.625Z" },
+    { url = "https://files.pythonhosted.org/packages/f6/a7/af813a7b4f9a42f498dde8a4c6fcbff8100eed00182cc91dbaf095645f38/numpy-2.3.2-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:103ea7063fa624af04a791c39f97070bf93b96d7af7eb23530cd087dc8dbe9dc", size = 16056262, upload-time = "2025-07-24T20:41:20.797Z" },
+    { url = "https://files.pythonhosted.org/packages/8b/5d/41c4ef8404caaa7f05ed1cfb06afe16a25895260eacbd29b4d84dff2920b/numpy-2.3.2-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:fc927d7f289d14f5e037be917539620603294454130b6de200091e23d27dc9be", size = 18579342, upload-time = "2025-07-24T20:41:50.753Z" },
+    { url = "https://files.pythonhosted.org/packages/a1/4f/9950e44c5a11636f4a3af6e825ec23003475cc9a466edb7a759ed3ea63bd/numpy-2.3.2-cp312-cp312-win32.whl", hash = "sha256:d95f59afe7f808c103be692175008bab926b59309ade3e6d25009e9a171f7036", size = 6320610, upload-time = "2025-07-24T20:42:01.551Z" },
+    { url = "https://files.pythonhosted.org/packages/7c/2f/244643a5ce54a94f0a9a2ab578189c061e4a87c002e037b0829dd77293b6/numpy-2.3.2-cp312-cp312-win_amd64.whl", hash = "sha256:9e196ade2400c0c737d93465327d1ae7c06c7cb8a1756121ebf54b06ca183c7f", size = 12786292, upload-time = "2025-07-24T20:42:20.738Z" },
+    { url = "https://files.pythonhosted.org/packages/54/cd/7b5f49d5d78db7badab22d8323c1b6ae458fbf86c4fdfa194ab3cd4eb39b/numpy-2.3.2-cp312-cp312-win_arm64.whl", hash = "sha256:ee807923782faaf60d0d7331f5e86da7d5e3079e28b291973c545476c2b00d07", size = 10194071, upload-time = "2025-07-24T20:42:36.657Z" },
+]
+
+[[package]]
 name = "psycopg2-binary"
 version = "2.9.10"
 source = { registry = "https://pypi.org/simple" }
@@ -414,6 +435,25 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/c9/1f/4f998c900485e5c0ef43838363ba4a9723ac0ad73a9dc42068b12aaba4e4/PyYAML-6.0.2-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:8b9c7197f7cb2738065c481a0461e50ad02f18c78cd75775628afb4d7137fb3b", size = 756611, upload-time = "2024-08-06T20:32:38.898Z" },
     { url = "https://files.pythonhosted.org/packages/df/d1/f5a275fdb252768b7a11ec63585bc38d0e87c9e05668a139fea92b80634c/PyYAML-6.0.2-cp312-cp312-win32.whl", hash = "sha256:ef6107725bd54b262d6dedcc2af448a266975032bc85ef0172c5f059da6325b4", size = 140591, upload-time = "2024-08-06T20:32:40.241Z" },
     { url = "https://files.pythonhosted.org/packages/0c/e8/4f648c598b17c3d06e8753d7d13d57542b30d56e6c2dedf9c331ae56312e/PyYAML-6.0.2-cp312-cp312-win_amd64.whl", hash = "sha256:7e7401d0de89a9a855c839bc697c079a4af81cf878373abd7dc625847d25cbd8", size = 156338, upload-time = "2024-08-06T20:32:41.93Z" },
+]
+
+[[package]]
+name = "questdb"
+version = "3.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ae/cc/b9a0a93ffc513c078f4dc93be835f09d87a140f1e8f3594e6bad757bef96/questdb-3.0.0.tar.gz", hash = "sha256:162413c36284a1c5b3805640b042babaa8590ba503976f81927efa2f8befb9dd", size = 30518964, upload-time = "2025-07-07T17:27:05.72Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3e/31/030f330e2e4cfd48b0c1c35f96f942bd8d989564bdef85b6e40414c8ff11/questdb-3.0.0-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:9f59ec6c8fac6d3cb343dc9edcd09e67c1bc79971cbc0ba5eced667acd6fb335", size = 3045459, upload-time = "2025-07-07T17:26:14.068Z" },
+    { url = "https://files.pythonhosted.org/packages/0c/7e/62f85bfbd2953c51e35829e0852413ea3ca406d66605d6dd7834f1426288/questdb-3.0.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:2f7009fe441917cbd4cee1d1a488f40d8a528552dce387f4f43108d69ccfb48e", size = 3130293, upload-time = "2025-07-07T17:26:15.792Z" },
+    { url = "https://files.pythonhosted.org/packages/3a/1b/ded58965b4e207f2a79ea53708551995de0768e4c23bae1ee343ce9bb9ce/questdb-3.0.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e1e7baf6f2dd96f43e08c335cc343ed5ae11c5ff8e90d3f33da1a531eab61a20", size = 5440156, upload-time = "2025-07-07T17:26:17.83Z" },
+    { url = "https://files.pythonhosted.org/packages/2f/70/d392dba1f2634d9b9d6e53ff987dd1cce615204fec55705bdb43bd28be21/questdb-3.0.0-cp312-cp312-manylinux_2_28_x86_64.whl", hash = "sha256:7bbf02a6be42743f98d8093fe3f9bdc8036a9bf24d50d8d2a0005b4989b55e9d", size = 5822885, upload-time = "2025-07-07T17:26:20.179Z" },
+    { url = "https://files.pythonhosted.org/packages/37/2e/2381c8c7d3da49789474d303438dc79cb657b85025131cc58111098f626f/questdb-3.0.0-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:92112b9dd0748f5e542b0f23842829b822a800fd50c4c263990156017f23edd1", size = 5458813, upload-time = "2025-07-07T17:26:22.045Z" },
+    { url = "https://files.pythonhosted.org/packages/92/9a/13792d95eb131edd086929e69070b630a8ee3fb3fd301c6e69d67db2140d/questdb-3.0.0-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:263dea4245cd72b1d0192bfeb54b384ee3a6b2627ef0bbf739e933f8550548e7", size = 5849751, upload-time = "2025-07-07T17:26:23.575Z" },
+    { url = "https://files.pythonhosted.org/packages/37/fd/a4a79043841340a387408d2c0fc2528f4952b1311f37881f96d451bb6fbb/questdb-3.0.0-cp312-cp312-win32.whl", hash = "sha256:de062bd8c7a3d58426666711948b818e944fda317deb1f8a1a2b7245573a745f", size = 1646021, upload-time = "2025-07-07T17:26:25.048Z" },
+    { url = "https://files.pythonhosted.org/packages/38/a7/622043056afa59972653fba488e2546a341d16a57ed45ce0e9654f77158e/questdb-3.0.0-cp312-cp312-win_amd64.whl", hash = "sha256:77dfa9fb077bfe0638791aff8439ad812b0fc014b342f21013ef8baf40fe48a3", size = 1926763, upload-time = "2025-07-07T17:26:27.002Z" },
 ]
 
 [[package]]

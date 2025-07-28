@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from src.api.main import router as router
 from fastapi.middleware.cors import CORSMiddleware
+from src.api.middleware.logs import LogsMiddleware
 
 from src.core.config import settings
 from src.core.database import engine, Base
@@ -26,6 +27,9 @@ app.add_middleware(
 
 # Incluir las rutas
 app.include_router(router)
+
+# Incluir el middleware de logs
+app.add_middleware(LogsMiddleware)
 
 
 if __name__ == "__main__":
