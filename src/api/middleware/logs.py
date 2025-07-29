@@ -15,7 +15,7 @@ class LogsMiddleware(BaseHTTPMiddleware):
         req_params = {
             "method": scope["method"],
             "req_headers": dict(map(lambda x: (x[0], x[1]), scope["headers"])),
-            "http_version": scope["http_version"],
+            "http_version": str(scope["http_version"]),
             "path": scope["path"],
             "scheme": scope["scheme"],
             "type": scope["type"],
@@ -32,7 +32,7 @@ class LogsMiddleware(BaseHTTPMiddleware):
         end_time = perf_counter()
 
         res_params = {
-            "status_code": response.status_code,
+            "status_code": str(response.status_code),
             "process_time": end_time - start_time,
             "created_at": created_at,
             "res_headers": dict(map(lambda x: (x[0], x[1]), response.headers.items())),
