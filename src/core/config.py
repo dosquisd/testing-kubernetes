@@ -56,6 +56,8 @@ class Settings(BaseSettings):
     QUESTDB_PORT: int = 9000
     QUESTDB_USER: Optional[str] = None
     QUESTDB_PASSWORD: Optional[str] = None
+    QUESTDB_PG_PORT: int = 8812
+    QUESTDB_DB: str = "logs"
 
     # Server configuration
     SECRET_KEY: str = secrets.token_urlsafe(32)
