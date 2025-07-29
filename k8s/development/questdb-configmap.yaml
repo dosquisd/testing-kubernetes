@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: questdb-config
+  namespace: development
+  labels:
+    app: simple-crud
+    component: questdb
+    environment: development
+data:
+  QUESTDB_HOST: "questdb-service"
+  QUESTDB_PORT: "9000"
+  QDB_PG_USER: "postgres"
+  QUESTDB_PG_PORT: "8812"
+  QUESTDB_DB: "logs"

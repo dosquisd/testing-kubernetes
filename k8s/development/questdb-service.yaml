@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: questdb-service
+  namespace: development
+  labels:
+    app: simple-crud
+    component: questdb
+    environment: development
+spec:
+  ports:
+    - port: 9000
+      targetPort: 9000
+      protocol: TCP
+      name: http
+    - port: 9003
+      targetPort: 9003
+      protocol: TCP
+      name: minimal-http
+    - port: 8812
+      targetPort: 8812
+      protocol: TCP
+      name: pg-wire
+  selector:
+    app: simple-crud
+    component: questdb
+    environment: development
+  type: ClusterIP

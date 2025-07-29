@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: questdb
+  namespace: development
+  labels:
+    app: simple-crud
+    component: questdb
+    environment: development
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simple-crud
+      component: questdb
+      environment: development
+  template:
+    metadata:
+      labels:
+        app: simple-crud
+        component: questdb
+        environment: development
+    spec:
+      containers:
+        - name: questdb
+          image: questdb/questdb:9.0.1
+          ports:
+            - containerPort: 9000 # HTTP API
+            - containerPort: 9003 # Minimal HTTP server (for health checks)
+            - containerPort: 8812 # PostgreSQL wire protocol (for grafana mostly)
+
+          env:
+            - name: QDB_PG_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: QDB_PG_USER
+                  name: questdb-config
+            - name: QDB_METRICS_ENABLED
+              value: "true"
+            - name: QDB_HTTP_MIN_ENABLED
+              value: "true"
+            - name: QDB_PG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: QUESTDB_PASSWORD
+                  name: questdb-secret
+
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "750m"
+
+          # Health check to ensure QuestDB is running
+          # checking the minimal HTTP server
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 9003
+            initialDelaySeconds: 30
+            periodSeconds: 10
+
+          # Liveness probe to check PostgreSQL wire protocol
+          livenessProbe:
+            tcpSocket:
+              port: 8812
+            initialDelaySeconds: 30
+            periodSeconds: 20
+
+          volumeMounts:
+            - mountPath: /var/lib/questdb
+              name: questdb-data
+
+      volumes:
+        - name: questdb-data
+          persistentVolumeClaim:
+            claimName: questdb-pvc

@@ -77,6 +77,38 @@ spec:
             - name: DEBUG
               value: "false"
 
+            # QuestDB environment variables
+            - name: QUESTDB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: QUESTDB_HOST
+                  name: questdb-config
+            - name: QUESTDB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: QUESTDB_PORT
+                  name: questdb-config
+            - name: QUESTDB_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: QDB_PG_USER
+                  name: questdb-config
+            - name: QUESTDB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: QUESTDB_PASSWORD
+                  name: questdb-secret
+            - name: QUESTDB_PG_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: QUESTDB_PG_PORT
+                  name: questdb-config
+            - name: QUESTDB_DB
+              valueFrom:
+                configMapKeyRef:
+                  key: QUESTDB_DB
+                  name: questdb-config
+
           ports:
             - containerPort: 8000
 
@@ -85,7 +117,8 @@ spec:
             httpGet:
               path: /health
               port: 8000
-            initialDelaySeconds: 5
+            initialDelaySeconds: 20
+            timeoutSeconds: 5
             periodSeconds: 10
 
           livenessProbe:

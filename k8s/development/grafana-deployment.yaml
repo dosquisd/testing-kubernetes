@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: development
+  labels:
+    app: simple-crud
+    component: grafana
+    environment: development
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simple-crud
+      component: grafana
+      environment: development
+
+  template:
+    metadata:
+      labels:
+        app: simple-crud
+        component: grafana
+        environment: development
+    spec:
+      securityContext:
+        fsGroup: 472
+        supplementalGroups:
+          - 0
+      containers:
+        - name: grafana
+          image: grafana/grafana:latest
+          imagePullPolicy: IfNotPresent
+
+          # Environment variables for Grafana
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: GRAFANA_USER
+                  name: grafana-config
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: GRAFANA_PASSWORD
+                  name: grafana-secret
+            - name: GF_INSTALL_PLUGINS
+              value: questdb-questdb-datasource
+
+          # Ports
+          ports:
+            - containerPort: 3000
+              name: http-grafana
+              protocol: TCP
+
+          # Health checks
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /robots.txt
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 2
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 3000
+            timeoutSeconds: 1
+
+          # Resources
+          resources:
+            requests:
+              cpu: 250m
+              memory: 750Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+
+          # Volume mounts (not using statefulsets in this case)
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: grafana-data
+            - mountPath: /etc/grafana/provisioning
+              name: grafana-config
+      volumes:
+        - name: grafana-data
+          persistentVolumeClaim:
+            claimName: grafana-pvc
+        - name: grafana-config
+          persistentVolumeClaim:
+            claimName: grafana-config
