@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO: Group by application component (e.g., redis, api, grafana)
+
 # Function to display usage
 usage() {
     echo "Usage: $0 <environment> <resource-type>"
@@ -13,6 +15,7 @@ usage() {
     echo "  configmaps    - Deploy all configmap files"
     echo "  secrets       - Deploy all secret files"
     echo "  services      - Deploy all service files"
+    echo "  pvcs          - Deploy all PVC files"
     echo "  all           - Deploy all resources"
     exit 1
 }
@@ -90,11 +93,15 @@ case "$resource_type" in
     "services")
         deploy_resource "$environment" "service"
         ;;
+    "pvcs")
+        deploy_resource "$environment" "pvc"
+        ;;
     "all")
         deploy_secrets "$environment"
         deploy_resource "$environment" "configmap"
         deploy_resource "$environment" "service"
         deploy_resource "$environment" "deployment"
+        deploy_resource "$environment" "pvc"
         ;;
     *)
         echo "Error: Unknown resource type '$resource_type'"
