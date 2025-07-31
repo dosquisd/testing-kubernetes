@@ -1,3 +1,7 @@
+pub mod core;
+use crate::core::config::Settings;
+
 fn main() {
-    println!("Hello, world!");
+    let settings: Settings = Settings::load_settings();
+    println!("{:#?}", settings);
 }
