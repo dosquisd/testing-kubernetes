@@ -2961,6 +2961,7 @@ dependencies = [
  "redis-om",
  "sea-orm",
  "secp256k1",
+ "serde",
  "tokio",
 ]
 
