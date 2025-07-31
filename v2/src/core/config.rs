@@ -1,34 +1,35 @@
 use rand::RngCore;
 use secp256k1::SecretKey;
 use std::env::VarError;
+use std::sync::LazyLock;
 
 use dotenv::dotenv;
 
 #[derive(Debug)]
 pub struct Settings {
     // Postgres Configuration
-    postgres_user: Result<String, VarError>,
-    postgres_password: Result<String, VarError>,
-    postgres_host: String,
-    postgres_port: String,
-    postgres_db: String,
+    pub postgres_user: Result<String, VarError>,
+    pub postgres_password: Result<String, VarError>,
+    pub postgres_host: String,
+    pub postgres_port: String,
+    pub postgres_db: String,
 
     // Redis Configuration
-    redis_host: String,
-    redis_port: String,
-    redis_password: Result<String, VarError>,
+    pub redis_host: String,
+    pub redis_port: String,
+    pub redis_password: Result<String, VarError>,
 
     // QuestDB Configuration
-    questdb_host: String,
-    questdb_port: String,
-    questdb_user: Result<String, VarError>,
-    questdb_password: Result<String, VarError>,
-    questdb_pg_port: String,
-    questdb_db: String,
+    pub questdb_host: String,
+    pub questdb_port: String,
+    pub questdb_user: Result<String, VarError>,
+    pub questdb_password: Result<String, VarError>,
+    pub questdb_pg_port: String,
+    pub questdb_db: String,
 
     // Server configuration
-    secret_key: String,
-    debug: bool,
+    pub secret_key: String,
+    pub debug: bool,
 }
 
 impl Settings {
@@ -73,3 +74,5 @@ impl Settings {
         }
     }
 }
+
+pub static SETTINGS: LazyLock<Settings> = LazyLock::new(|| Settings::load_settings());
