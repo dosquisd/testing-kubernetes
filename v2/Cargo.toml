@@ -5,4 +5,9 @@ edition = "2024"
 
 [dependencies]
 actix-web = "4.11.0"
+dotenv = "0.15.0"
+questdb-rs = "5.0.0"
+rand = "0.9.2"
+redis-om = "0.1.0"
 sea-orm = "1.1.14"
+secp256k1 = "0.31.1"
