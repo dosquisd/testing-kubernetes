@@ -26,7 +26,7 @@ app.add_middleware(
 )
 
 # Incluir las rutas
-app.include_router(router)
+app.include_router(router, prefix="/api/v1")
 
 # Incluir el middleware de logs
 app.add_middleware(LogsMiddleware)
