@@ -1,5 +1,7 @@
-use actix_web::{App, HttpServer};
-use v2::api::main::controller;
+use actix_cors::Cors;
+use actix_web::middleware::Logger;
+use actix_web::{App, HttpServer, web};
+use v2::api::main::handler;
 
 // use v2::core::database::DatabaseService;
 // use sea_orm::{ConnectionTrait, DatabaseBackend, Statement};
@@ -7,10 +9,29 @@ use v2::api::main::controller;
 
 #[actix_web::main]
 async fn main() -> Result<(), std::io::Error> {
-    HttpServer::new(|| App::new().service(controller("/api/v2")))
-        .bind(("127.0.0.1", 8000))?
-        .run()
-        .await
+    env_logger::init();
+
+    let prefix = "/api/v2";
+    let db = v2::core::database::DatabaseService::init().await;
+    let app_data = web::Data::new(db);
+
+    println!("🚀 Server started successfully");
+
+    HttpServer::new(move || {
+        let cors = Cors::default()
+            .allow_any_header()
+            .allow_any_method()
+            .allow_any_origin() // Just for development
+            .supports_credentials();
+        App::new()
+            .app_data(app_data.clone())
+            .service(handler(prefix))
+            .wrap(cors)
+            .wrap(Logger::default())
+    })
+    .bind(("127.0.0.1", 8000))?
+    .run()
+    .await
     /*
     let now = std::time::SystemTime::now();
     let db_service = tokio::runtime::Builder::new_current_thread()

@@ -1,52 +1,81 @@
-use super::core::database::DatabaseService;
-
 use super::models::prelude::Users as UserEntity;
 use super::models::users;
 use super::models::users::Model as UserModel;
-use super::schemas::users::{UserCreate, UserUpdate};
+use super::schemas::{
+    api::ErrorResponse,
+    users::{UserCreate, UserUpdate},
+};
 
 use sea_orm::ActiveValue::{NotSet, Set};
-use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, ModelTrait, QueryFilter};
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, ModelTrait, QueryFilter,
+};
 
-pub struct UserService {
-    db: DatabaseService,
-}
+pub struct UserService;
 
 impl UserService {
-    pub async fn get_user_by_id(&self, user_id: u16) -> Result<UserModel, String> {
-        let result = UserEntity::find_by_id(user_id as i32)
-            .one(&self.db.connection)
-            .await;
+    pub async fn get_user_by_id(
+        &self,
+        user_id: u16,
+        connection: &DatabaseConnection,
+    ) -> Result<UserModel, ErrorResponse> {
+        let result = UserEntity::find_by_id(user_id as i32).one(connection).await;
         match result {
             Ok(Some(user)) => Ok(user),
-            Ok(None) => Err(format!("User with ID {} not found", user_id)),
-            Err(e) => Err(format!("Database error: {}", e)),
+            Ok(None) => Err(ErrorResponse {
+                message: format!("User with ID {} not found", user_id),
+                status_code: 404,
+            }),
+            Err(e) => Err(ErrorResponse {
+                message: format!("Database error: {}", e),
+                status_code: 500,
+            }),
         }
     }
 
-    pub async fn get_user_by_email(&self, email: &str) -> Result<UserModel, String> {
+    pub async fn get_user_by_email(
+        &self,
+        email: &str,
+        connection: &DatabaseConnection,
+    ) -> Result<UserModel, ErrorResponse> {
         let result = UserEntity::find()
             .filter(users::Column::Email.eq(email.to_owned()))
-            .one(&self.db.connection)
+            .one(connection)
             .await;
         match result {
             Ok(Some(user)) => Ok(user),
-            Ok(None) => Err(format!("User with email {} not found", email)),
-            Err(e) => Err(format!("Database error: {}", e)),
+            Ok(None) => Err(ErrorResponse {
+                message: format!("User with email {} not found", email),
+                status_code: 404,
+            }),
+            Err(e) => Err(ErrorResponse {
+                message: format!("Database error: {}", e),
+                status_code: 500,
+            }),
         }
     }
 
-    pub async fn get_users(&self) -> Result<Vec<UserModel>, String> {
-        let result = UserEntity::find().all(&self.db.connection).await;
+    pub async fn get_users(
+        &self,
+        connection: &DatabaseConnection,
+    ) -> Result<Vec<UserModel>, ErrorResponse> {
+        let result = UserEntity::find().all(connection).await;
         match result {
             Ok(users) => Ok(users),
-            Err(e) => Err(format!("Database error: {}", e)),
+            Err(e) => Err(ErrorResponse {
+                message: format!("Database error: {}", e),
+                status_code: 500,
+            }),
         }
     }
 
-    pub async fn create_user(&self, user: UserCreate) -> Result<i32, String> {
+    pub async fn create_user(
+        &self,
+        user: UserCreate,
+        connection: &DatabaseConnection,
+    ) -> Result<UserModel, ErrorResponse> {
         let active_model: users::ActiveModel = users::ActiveModel {
-            id: Set(1),
+            id: NotSet,
             email: Set(user.email),
             name: Set(user.name),
             age: Set(user.age),
@@ -56,37 +85,45 @@ impl UserService {
         };
 
         // 1.
-        // let result = active_model.insert(&self.db.connection).await;
+        let result: Result<UserModel, sea_orm::DbErr> = active_model.insert(connection).await;
 
         // 2.
-        let result = UserEntity::insert(active_model)
-            .exec(&self.db.connection)
-            .await;
+        // let result: Result<sea_orm::InsertResult<users::ActiveModel>, sea_orm::DbErr> = UserEntity::insert(active_model).exec(connection).await;
 
         // Same output
         match result {
-            Ok(user_result) => Ok(user_result.last_insert_id),
-            Err(e) => Err(format!("Database error: {}", e)),
+            Ok(user_result) => Ok(user_result),
+            Err(e) => Err(ErrorResponse {
+                message: format!("Database error: {}", e),
+                status_code: 500,
+            }),
         }
     }
 
     pub async fn update_user(
         &self,
-        user_id: i32,
+        user_id: u16,
         update_user: UserUpdate,
-    ) -> Result<UserModel, String> {
+        connection: &DatabaseConnection,
+    ) -> Result<UserModel, ErrorResponse> {
         let active_model: Result<Option<UserModel>, sea_orm::DbErr> =
-            UserEntity::find_by_id(user_id)
-                .one(&self.db.connection)
-                .await;
+            UserEntity::find_by_id(user_id).one(connection).await;
 
         if active_model.is_err() {
-            return Err(format!("Database error: {}", active_model.err().unwrap()));
+            return Err(ErrorResponse {
+                message: format!("Database error: {}", active_model.err().unwrap()),
+                status_code: 500,
+            });
         }
 
         let mut active_model: users::ActiveModel = match active_model.unwrap() {
             Some(model) => model.into(),
-            None => return Err(format!("User with ID {} not found", user_id)),
+            None => {
+                return Err(ErrorResponse {
+                    message: format!("User with ID {} not found", user_id),
+                    status_code: 404,
+                });
+            }
         };
 
         if let Some(name) = update_user.name {
@@ -99,33 +136,47 @@ impl UserService {
         active_model.age = Set(update_user.age);
         active_model.is_active = Set(update_user.is_active);
 
-        let active_model = active_model.update(&self.db.connection).await;
+        let active_model = active_model.update(connection).await;
         match active_model {
             Ok(updated_user) => Ok(updated_user),
-            Err(e) => Err(format!("Database error: {}", e)),
+            Err(e) => Err(ErrorResponse {
+                message: format!("Database error: {}", e),
+                status_code: 500,
+            }),
         }
     }
 
-    pub async fn delete_user(&self, user_id: i32) -> Result<UserModel, String> {
-        let user = UserEntity::find_by_id(user_id)
-            .one(&self.db.connection)
-            .await;
+    pub async fn delete_user(
+        &self,
+        user_id: u16,
+        connection: &DatabaseConnection,
+    ) -> Result<UserModel, ErrorResponse> {
+        let user = UserEntity::find_by_id(user_id).one(connection).await;
 
         if let Err(e) = user {
-            return Err(format!("Database error: {}", e));
+            return Err(ErrorResponse {
+                message: format!("Database error: {}", e),
+                status_code: 500,
+            });
         }
 
         let user = user.unwrap();
         if user.is_none() {
-            return Err(format!("User with ID {} not found", user_id));
+            return Err(ErrorResponse {
+                message: format!("User with ID {} not found", user_id),
+                status_code: 404,
+            });
         }
 
-        match user.clone().unwrap().delete(&self.db.connection).await {
-            Err(e) => Err(format!("Database error: {}", e)),
-            Ok(_) => Ok(user.unwrap())
+        match user.clone().unwrap().delete(connection).await {
+            Err(e) => Err(ErrorResponse {
+                message: format!("Database error: {}", e),
+                status_code: 500,
+            }),
+            Ok(_) => Ok(user.unwrap()),
         }
 
         // Shorthand
-        // UserEntity::delete_by_id(user_id).exec(&self.db.connection).await?
+        // UserEntity::delete_by_id(user_id).exec(connection).await?
     }
 }

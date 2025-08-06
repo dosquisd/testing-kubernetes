@@ -1,3 +1,4 @@
+use super::routes::handler_users;
 use actix_web::{Responder, Scope, get, http::Error, web};
 use serde::Serialize;
 
@@ -11,6 +12,7 @@ struct Root {
 
 #[get("/")]
 pub async fn root() -> Result<impl Responder, Error> {
+    println!("Root endpoint hit");
     Ok(web::Json(Root {
         message: "User Management API".to_owned(),
         version: "2.0.0".to_owned(),
@@ -19,6 +21,8 @@ pub async fn root() -> Result<impl Responder, Error> {
     }))
 }
 
-pub fn controller(prefix: &str) -> Scope {
-    web::scope(prefix).service(root)
+pub fn handler(prefix: &str) -> Scope {
+    web::scope(prefix)
+        .service(root)
+        .service(handler_users())
 }
