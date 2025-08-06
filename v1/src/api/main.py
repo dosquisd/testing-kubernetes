@@ -11,7 +11,7 @@ from src.core.database import SessionLocal
 router = APIRouter()
 
 # Incluir las rutas
-router.include_router(users_router, prefix="/api/v1")
+router.include_router(users_router)
 
 
 @router.get("/")
