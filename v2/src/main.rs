@@ -15,7 +15,7 @@ async fn main() -> Result<(), std::io::Error> {
     env_logger::init_from_env(Env::default().default_filter_or("info"));
 
     let prefix = "/api/v2";
-    let db = v2::core::database::DatabaseService::init().await;
+    let db = v2::core::database::DatabaseService::init(None).await;
     let app_data = web::Data::new(db);
 
     HttpServer::new(move || {

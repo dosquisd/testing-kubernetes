@@ -52,6 +52,10 @@ impl RedisService {
             .collect();
         results.iter().filter(|res| res.is_ok()).count()
     }
+
+    pub fn ping(&self) -> redis::RedisResult<String> {
+        Commands::ping(&mut self.client.get_connection().unwrap())
+    }
 }
 
 pub static REDIS_SERVICE: LazyLock<RedisService> = LazyLock::new(|| RedisService::new());
