@@ -1,29 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: api-v2
   namespace: development
   labels:
     app: simple-crud
-    component: api
+    component: api-v2
     environment: development
 spec:
   selector:
     matchLabels:
       app: simple-crud
-      component: api
+      component: api-v2
       environment: development
   replicas: 1
   template:
     metadata:
       labels:
         app: simple-crud
-        component: api
+        component: api-v2
         environment: development
     spec:
       containers:
-        - name: api
-          image: dosquisd/simple_crud:latest
+        - name: api-v2
+          image: dosquisd/simple_crud:2.0
           env:
             # PostgreSQL environment variables
             - name: POSTGRES_USER
@@ -115,7 +115,7 @@ spec:
           # Health checks
           readinessProbe:
             httpGet:
-              path: /health
+              path: /api/v2/health
               port: 8000
             initialDelaySeconds: 20
             timeoutSeconds: 5
