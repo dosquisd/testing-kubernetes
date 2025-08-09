@@ -2,6 +2,7 @@ use super::config::SETTINGS;
 use sea_orm::{ConnectOptions, DatabaseConnection};
 use std::time::Duration;
 
+#[derive(Clone)]
 pub struct DatabaseService {
     pub connection: DatabaseConnection,
 }

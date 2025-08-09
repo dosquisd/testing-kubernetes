@@ -6,9 +6,7 @@ use actix_web::middleware::{Logger, from_fn};
 use env_logger::Env;
 use v2::api::middlewares::logs::dispatch_logs;
 
-// use v2::core::database::DatabaseService;
-// use sea_orm::{ConnectionTrait, DatabaseBackend, Statement};
-// use tokio;
+use migration::{Migrator, MigratorTrait};
 
 #[actix_web::main]
 async fn main() -> Result<(), std::io::Error> {
@@ -16,7 +14,15 @@ async fn main() -> Result<(), std::io::Error> {
 
     let prefix = "/api/v2";
     let db = v2::core::database::DatabaseService::init(None).await;
-    let app_data = web::Data::new(db);
+    let app_data = web::Data::new(db.clone());
+
+    match Migrator::up(&db.connection, None).await {
+        Ok(_) => log::info!("Database migration completed successfully."),
+        Err(e) => {
+            log::error!("Database migration failed: {}", e);
+            return Err(std::io::Error::new(std::io::ErrorKind::Other, "Migration failed"));
+        }
+    };
 
     HttpServer::new(move || {
         let cors = Cors::default()
@@ -35,5 +41,5 @@ async fn main() -> Result<(), std::io::Error> {
     })
     .bind(("0.0.0.0", 8000))?
     .run()
-    .await  
+    .await
 }
