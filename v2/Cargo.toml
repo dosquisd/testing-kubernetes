@@ -11,7 +11,6 @@ futures = "0.3.31"
 log = "0.4.27"
 questdb-rs = "5.0.0"
 rand = "0.9.2"
-redis-om = "0.1.0"
 sea-orm = { version = "1.1.14", features = [
     "sqlx-postgres",
     "runtime-tokio-rustls",
@@ -21,3 +20,6 @@ secp256k1 = "0.31.1"
 tokio = "1.47.0"
 actix-cors = "0.7.1"
 env_logger = "0.11.8"
+redis = { version = "0.32.4", features = ["tokio-rustls-comp"] }
+rustls = "0.23.31"
+serde_json = "1.0.142"

@@ -2,12 +2,31 @@ use crate::core::database::DatabaseService;
 use crate::crud::UserService;
 use crate::schemas::users::{UserCreate, UserUpdate};
 use actix_web::{HttpResponse, Responder, delete, get, post, put, web};
+use serde::Deserialize;
+
+#[derive(Deserialize, Clone)]
+struct QueryParamsUsers {
+    page: Option<usize>,
+    limit: Option<usize>,
+    search: Option<String>,
+}
 
 #[get("/")]
-async fn get_users(db: web::Data<DatabaseService>) -> Result<impl Responder, actix_web::Error> {
+async fn get_users(
+    params: web::Query<QueryParamsUsers>,
+    db: web::Data<DatabaseService>,
+) -> Result<impl Responder, actix_web::Error> {
     println!("Fetching all users");
     let user_service = UserService {};
-    match user_service.get_users(&db.connection).await {
+    match user_service
+        .get_users(
+            &db.connection,
+            params.clone().into_inner().page.unwrap_or(1),
+            params.clone().into_inner().limit.unwrap_or(100),
+            params.clone().into_inner().search,
+        )
+        .await
+    {
         Ok(users) => Ok(HttpResponse::Ok().json(users)),
         Err(e) => {
             log::error!("Error fetching users: {}", e.message);
@@ -119,4 +138,3 @@ pub fn handler_users() -> actix_web::Scope {
         .service(update_user)
         .service(delete_user)
 }
-    

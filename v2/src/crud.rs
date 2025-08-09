@@ -1,6 +1,5 @@
 use super::models::prelude::Users as UserEntity;
-use super::models::users;
-use super::models::users::Model as UserModel;
+use super::models::users::{self, Model as UserModel};
 use super::schemas::{
     api::ErrorResponse,
     users::{UserCreate, UserUpdate},
@@ -11,6 +10,9 @@ use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, ModelTrait, QueryFilter,
 };
 
+use crate::core::cache::REDIS_SERVICE;
+use serde_json;
+
 pub struct UserService;
 
 impl UserService {
@@ -19,9 +21,38 @@ impl UserService {
         user_id: u16,
         connection: &DatabaseConnection,
     ) -> Result<UserModel, ErrorResponse> {
+        // Return cached response
+        let cache_key = format!("user:id:{}", user_id);
+        let cached_user = REDIS_SERVICE.get(cache_key.as_str());
+        if let Some(user) = cached_user {
+            match serde_json::from_str::<UserModel>(user.as_str()) {
+                Ok(user_model) => return Ok(user_model),
+                Err(_) => {
+                    log::warn!("Failed to deserialize cached user with ID {}", user_id);
+                }
+            }
+        }
+
         let result = UserEntity::find_by_id(user_id as i32).one(connection).await;
         match result {
-            Ok(Some(user)) => Ok(user),
+            Ok(Some(user)) => {
+                // Try to cache the response
+                match serde_json::to_string(&user) {
+                    Ok(cached_response) => {
+                        let set_result =
+                            REDIS_SERVICE.set(&cache_key.as_str(), cached_response.as_str());
+                        if let Err(e) = set_result {
+                            log::warn!("Failed to cache response with ID {user_id} -- Error: {e} ")
+                        }
+                    }
+                    Err(e) => {
+                        log::warn!(
+                            "Failed to serialize cached response with ID {user_id} -- Error: {e}"
+                        );
+                    }
+                };
+                Ok(user)
+            }
             Ok(None) => Err(ErrorResponse {
                 message: format!("User with ID {} not found", user_id),
                 status_code: 404,
@@ -38,12 +69,39 @@ impl UserService {
         email: &str,
         connection: &DatabaseConnection,
     ) -> Result<UserModel, ErrorResponse> {
+        let cache_key = format!("user:email:{}", email);
+        let cached_user = REDIS_SERVICE.get(cache_key.as_str());
+        if let Some(user) = cached_user {
+            match serde_json::from_str::<UserModel>(user.as_str()) {
+                Ok(user_model) => return Ok(user_model),
+                Err(_) => {
+                    log::warn!("Failed to deserialize cached user with email {}", email);
+                }
+            }
+        }
+
         let result = UserEntity::find()
             .filter(users::Column::Email.eq(email.to_owned()))
             .one(connection)
             .await;
         match result {
-            Ok(Some(user)) => Ok(user),
+            Ok(Some(user)) => {
+                match serde_json::to_string(&user) {
+                    Ok(cached_response) => {
+                        let set_result =
+                            REDIS_SERVICE.set(&cache_key.as_str(), cached_response.as_str());
+                        if let Err(e) = set_result {
+                            log::warn!("Failed to cache response with email {email} -- Error: {e} ")
+                        }
+                    }
+                    Err(e) => {
+                        log::warn!(
+                            "Failed to serialize cached response with email {email} -- Error: {e}"
+                        );
+                    }
+                };
+                Ok(user)
+            }
             Ok(None) => Err(ErrorResponse {
                 message: format!("User with email {} not found", email),
                 status_code: 404,
@@ -58,10 +116,58 @@ impl UserService {
     pub async fn get_users(
         &self,
         connection: &DatabaseConnection,
+        page: usize,
+        limit: usize,
+        search: Option<String>,
     ) -> Result<Vec<UserModel>, ErrorResponse> {
-        let result = UserEntity::find().all(connection).await;
+        let cache_key = format!(
+            "users:page:{page}:limit:{limit}:search:{}",
+            search.clone().unwrap_or("none".to_string())
+        );
+        let cached_response = REDIS_SERVICE.get(&cache_key.as_str());
+        if let Some(response) = cached_response {
+            match serde_json::from_str::<Vec<UserModel>>(response.as_str()) {
+                Ok(users) => return Ok(users),
+                _ => {
+                    log::warn!("Failed to deserialize cached users")
+                }
+            }
+        }
+
+        // Before (without pagination)
+        // let result = UserEntity::find().all(connection).await;
+
+        // After (with pagination)
+        let offset = (page - 1) * limit;
+        let mut query = UserEntity::find();
+        sea_orm::QueryTrait::query(&mut query)
+            .offset(offset as u64)
+            .limit(limit as u64);
+        if let Some(search_term) = search {
+            query = query.filter(
+                users::Column::Name
+                    .contains(search_term.as_str())
+                    .or(users::Column::Email.contains(search_term.as_str())),
+            );
+        }
+        let result = query.all(connection).await;
+
         match result {
-            Ok(users) => Ok(users),
+            Ok(users) => {
+                match serde_json::to_string(&users) {
+                    Ok(cached_response) => {
+                        let set_result =
+                            REDIS_SERVICE.set(&cache_key.as_str(), cached_response.as_str());
+                        if let Err(e) = set_result {
+                            log::warn!("Failed to cache response -- Error: {e} ")
+                        }
+                    }
+                    Err(e) => {
+                        log::warn!("Failed to serialize cached response -- Error: {e}");
+                    }
+                };
+                Ok(users)
+            }
             Err(e) => Err(ErrorResponse {
                 message: format!("Database error: {}", e),
                 status_code: 500,
@@ -90,7 +196,9 @@ impl UserService {
         // 2.
         // let result: Result<sea_orm::InsertResult<users::ActiveModel>, sea_orm::DbErr> = UserEntity::insert(active_model).exec(connection).await;
 
-        // Same output
+        // Invalidate cached response of all users
+        REDIS_SERVICE.delete_pattern("users:*");
+
         match result {
             Ok(user_result) => Ok(user_result),
             Err(e) => Err(ErrorResponse {
@@ -125,6 +233,21 @@ impl UserService {
                 });
             }
         };
+
+        // Invalidate cache responses
+        REDIS_SERVICE.delete_pattern("users:*");
+        let redis_result = REDIS_SERVICE.delete(&format!("user:id:{user_id}"));
+        if let Err(e) = redis_result {
+            log::warn!("Failed to delete cached user with ID {user_id} -- Error: {e}");
+        }
+        let redis_result =
+            REDIS_SERVICE.delete(&format!("user:email:{}", active_model.email.as_ref()));
+        if let Err(e) = redis_result {
+            log::warn!(
+                "Failed to delete cached user with email {} -- Error: {e}",
+                active_model.email.as_ref()
+            );
+        }
 
         if let Some(name) = update_user.name {
             active_model.name = Set(name);
@@ -173,7 +296,24 @@ impl UserService {
                 message: format!("Database error: {}", e),
                 status_code: 500,
             }),
-            Ok(_) => Ok(user.unwrap()),
+            Ok(_) => {
+                // Invalidate cache responses
+                REDIS_SERVICE.delete_pattern("users:*");
+                let redis_result = REDIS_SERVICE.delete(&format!("user:id:{user_id}"));
+                if let Err(e) = redis_result {
+                    log::warn!("Failed to delete cached user with ID {user_id} -- Error: {e}");
+                }
+                let redis_result =
+                    REDIS_SERVICE.delete(&format!("user:email:{}", user.clone().unwrap().email));
+                if let Err(e) = redis_result {
+                    log::warn!(
+                        "Failed to delete cached user with email {} -- Error: {e}",
+                        user.clone().unwrap().email
+                    );
+                }
+
+                Ok(user.unwrap())
+            }
         }
 
         // Shorthand
