@@ -27,7 +27,6 @@ impl DatabaseService {
 
     pub async fn init() -> Self {
         let uri = DatabaseService::_create_database_uri(Some("postgres"));
-        println!("Connecting to database at: {}", uri);
         let mut options = ConnectOptions::new(uri);
 
         // Configure connection timeouts and pool settings

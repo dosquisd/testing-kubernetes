@@ -12,7 +12,6 @@ struct Root {
 
 #[get("/")]
 pub async fn root() -> Result<impl Responder, Error> {
-    println!("Root endpoint hit");
     Ok(web::Json(Root {
         message: "User Management API".to_owned(),
         version: "2.0.0".to_owned(),

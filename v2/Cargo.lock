@@ -647,8 +647,10 @@ checksum = "c469d952047f47f91b68d1cba3f10d63c11d73e4636f24f08daf0278abf01c4d"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
+ "js-sys",
  "num-traits",
  "serde",
+ "wasm-bindgen",
  "windows-link",
 ]
 
@@ -2048,6 +2050,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "916dc745bd6edf539460c9bfb91370cc4b593a6e0928f54d692ba49cda3a7035"
 dependencies = [
  "base64ct",
+ "chrono",
  "dns-lookup",
  "indoc",
  "itoa",
@@ -3303,6 +3306,7 @@ version = "0.1.0"
 dependencies = [
  "actix-cors",
  "actix-web",
+ "chrono",
  "dotenv",
  "env_logger",
  "futures",

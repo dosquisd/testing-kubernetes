@@ -16,7 +16,6 @@ async fn get_users(
     params: web::Query<QueryParamsUsers>,
     db: web::Data<DatabaseService>,
 ) -> Result<impl Responder, actix_web::Error> {
-    println!("Fetching all users");
     let user_service = UserService {};
     match user_service
         .get_users(
@@ -40,7 +39,6 @@ async fn get_user(
     db: web::Data<DatabaseService>,
     id: web::Path<u16>,
 ) -> Result<impl Responder, actix_web::Error> {
-    println!("Fetching user with ID: {}", id);
     let user_service = UserService {};
     match user_service
         .get_user_by_id(id.into_inner(), &db.connection)
@@ -59,7 +57,6 @@ async fn get_user_by_email(
     db: web::Data<DatabaseService>,
     email: web::Path<String>,
 ) -> Result<impl Responder, actix_web::Error> {
-    println!("Fetching user with email: {}", email);
     let user_service = UserService {};
     match user_service
         .get_user_by_email(email.into_inner().as_str(), &db.connection)
@@ -79,7 +76,6 @@ async fn create_user(
     user: web::Json<UserCreate>,
 ) -> Result<impl Responder, actix_web::Error> {
     let user = user.into_inner();
-    println!("Creating user: {:?}", user);
     let user_service = UserService {};
     match user_service.create_user(user, &db.connection).await {
         Ok(id) => Ok(HttpResponse::Created().json(id)),
@@ -98,7 +94,6 @@ async fn update_user(
 ) -> Result<impl Responder, actix_web::Error> {
     let user = user.into_inner();
     let user_id = id.into_inner();
-    println!("Updating user with ID: {} - {:?}", user_id, user);
     let user_service = UserService {};
     match user_service
         .update_user(user_id, user, &db.connection)
@@ -118,7 +113,6 @@ async fn delete_user(
     id: web::Path<u16>,
 ) -> Result<impl Responder, actix_web::Error> {
     let user_id = id.into_inner();
-    println!("Deleting user with ID: {}", user_id);
     let user_service = UserService {};
     match user_service.delete_user(user_id, &db.connection).await {
         Ok(_) => Ok(HttpResponse::NoContent().finish()),
