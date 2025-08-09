@@ -16,6 +16,8 @@ usage() {
     echo "  secrets       - Deploy all secret files"
     echo "  services      - Deploy all service files"
     echo "  pvcs          - Deploy all PVC files"
+    echo "  statefulsets  - Deploy all statefulset files"
+    echo "  ingresses     - Deploy all ingress files"
     echo "  all           - Deploy all resources"
     exit 1
 }
@@ -96,11 +98,19 @@ case "$resource_type" in
     "pvcs")
         deploy_resource "$environment" "pvc"
         ;;
+    "statefulsets")
+        deploy_resource "$environment" "statefulset"
+        ;;
+    "ingresses")
+        deploy_resource "$environment" "ingress"
+        ;;
     "all")
         deploy_secrets "$environment"
         deploy_resource "$environment" "configmap"
         deploy_resource "$environment" "service"
         deploy_resource "$environment" "deployment"
+        deploy_resource "$environment" "statefulset"
+        deploy_resource "$environment" "ingress"
         deploy_resource "$environment" "pvc"
         ;;
     *)
