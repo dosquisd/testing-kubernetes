@@ -18,7 +18,6 @@ class LogsMiddleware(BaseHTTPMiddleware):
             "http_version": str(scope["http_version"]),
             "path": scope["path"],
             "scheme": scope["scheme"],
-            "type": scope["type"],
             "path_params": scope["path_params"] if "path_params" in scope else {},
             "query_string": scope["query_string"],
             "server": scope["server"],
