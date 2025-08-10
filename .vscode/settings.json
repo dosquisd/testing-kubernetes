@@ -2,5 +2,8 @@
   "[rust]": {
     "editor.semanticHighlighting.enabled": false
   },
+  "rust-analyzer.linkedProjects": [
+    "${workspaceFolder}/apps/server-v2/Cargo.toml"
+  ],
   "postman.settings.dotenv-detection-notification-visibility": false,
 }
