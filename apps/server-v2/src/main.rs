@@ -20,7 +20,10 @@ async fn main() -> Result<(), std::io::Error> {
         Ok(_) => log::info!("Database migration completed successfully."),
         Err(e) => {
             log::error!("Database migration failed: {}", e);
-            return Err(std::io::Error::new(std::io::ErrorKind::Other, "Migration failed"));
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                "Migration failed",
+            ));
         }
     };
 

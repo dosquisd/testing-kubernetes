@@ -1,5 +1,5 @@
-use serde::Serialize;
 use actix_web::http::StatusCode;
+use serde::Serialize;
 
 #[derive(Serialize)]
 pub struct ErrorResponse {
