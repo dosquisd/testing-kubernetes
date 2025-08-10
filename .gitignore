@@ -1,3 +1,7 @@
 # Variables (uncommented just to keep them in github, but it's important to keep them in .gitignore)
 # .secrets.env
 # .env
+
+# moon
+.moon/cache
+.moon/docker

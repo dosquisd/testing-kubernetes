@@ -1,0 +1,24 @@
+layer: "application"
+language: "rust"
+
+project:
+  name: "Server V2"
+  description: "The second version of a server application for managing users"
+  channel: "#moon"
+  owner: "dosquisd"
+  maintainers: ["dosquisd"]
+
+tasks:
+  build:
+    command: "cargo build --release"
+
+    # This task will be run when detect changes in the following files/directories
+    inputs:
+      - "src/**/*"
+      - "Cargo.toml"
+
+    # Just smart caching 
+    outputs:
+      - "target/release"
+  format:
+    command: "cargo fmt --all"

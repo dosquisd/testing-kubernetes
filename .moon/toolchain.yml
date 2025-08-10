@@ -1,0 +1,14 @@
+# For v1
+python:
+  version: "3.12.10"
+  packageManager: uv
+  uv: {}
+
+# For v2
+rust:
+  version: "1.88.0"
+
+# For v3 (future)
+node:
+  packageManager: npm
+  npm: {}

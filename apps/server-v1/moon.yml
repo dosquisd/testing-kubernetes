@@ -1,0 +1,15 @@
+layer: "application"
+language: "python"
+
+project:
+  name: "Server V1"
+  description: "The first version of a server application for managing users"
+  channel: "#moon"
+  owner: "dosquisd"
+  maintainers: ["dosquisd"]
+
+tasks:
+  format:
+    command: "uv run ruff format ."
+  lint:
+    command: "uv run ruff check ."

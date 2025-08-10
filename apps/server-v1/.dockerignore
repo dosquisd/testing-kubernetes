@@ -10,5 +10,7 @@ wheels/
 .venv
 
 # Git related files
-.git/
 .gitignore
+
+# Moon configuration files
+moon.yml
