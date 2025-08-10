@@ -19,9 +19,9 @@ pub struct DatabaseParams {
 impl DatabaseService {
     pub fn create_database_uri(params: DatabaseParams) -> String {
         let credentials = match (params.user, params.password) {
-            (Some(user), Some(password)) => format!("{}:{}@", user, password),
-            (Some(user), _) => format!("{}@", user),
-            (_, Some(password)) => format!(":{}@", password),
+            (Some(user), Some(password)) => format!("{user}:{password}@"),
+            (Some(user), _) => format!("{user}@"),
+            (_, Some(password)) => format!(":{password}@"),
             (_, _) => String::new(),
         };
 

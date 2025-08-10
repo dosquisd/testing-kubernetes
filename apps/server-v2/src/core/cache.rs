@@ -7,6 +7,12 @@ pub struct RedisService {
     client: redis::Client,
 }
 
+impl Default for RedisService {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl RedisService {
     pub fn new() -> RedisService {
         let params = redis::ConnectionInfo {
@@ -58,4 +64,4 @@ impl RedisService {
     }
 }
 
-pub static REDIS_SERVICE: LazyLock<RedisService> = LazyLock::new(|| RedisService::new());
+pub static REDIS_SERVICE: LazyLock<RedisService> = LazyLock::new(RedisService::new);

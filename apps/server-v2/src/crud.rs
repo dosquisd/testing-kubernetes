@@ -22,13 +22,13 @@ impl UserService {
         connection: &DatabaseConnection,
     ) -> Result<UserModel, ErrorResponse> {
         // Return cached response
-        let cache_key = format!("user:id:{}", user_id);
+        let cache_key = format!("user:id:{user_id}");
         let cached_user = REDIS_SERVICE.get(cache_key.as_str());
         if let Some(user) = cached_user {
             match serde_json::from_str::<UserModel>(user.as_str()) {
                 Ok(user_model) => return Ok(user_model),
                 Err(_) => {
-                    log::warn!("Failed to deserialize cached user with ID {}", user_id);
+                    log::warn!("Failed to deserialize cached user with ID {user_id}");
                 }
             }
         }
@@ -40,7 +40,7 @@ impl UserService {
                 match serde_json::to_string(&user) {
                     Ok(cached_response) => {
                         let set_result =
-                            REDIS_SERVICE.set(&cache_key.as_str(), cached_response.as_str());
+                            REDIS_SERVICE.set(cache_key.as_str(), cached_response.as_str());
                         if let Err(e) = set_result {
                             log::warn!("Failed to cache response with ID {user_id} -- Error: {e} ")
                         }
@@ -54,11 +54,11 @@ impl UserService {
                 Ok(user)
             }
             Ok(None) => Err(ErrorResponse {
-                message: format!("User with ID {} not found", user_id),
+                message: format!("User with ID {user_id} not found"),
                 status_code: 404,
             }),
             Err(e) => Err(ErrorResponse {
-                message: format!("Database error: {}", e),
+                message: format!("Database error: {e}"),
                 status_code: 500,
             }),
         }
@@ -69,13 +69,13 @@ impl UserService {
         email: &str,
         connection: &DatabaseConnection,
     ) -> Result<UserModel, ErrorResponse> {
-        let cache_key = format!("user:email:{}", email);
+        let cache_key = format!("user:email:{email}");
         let cached_user = REDIS_SERVICE.get(cache_key.as_str());
         if let Some(user) = cached_user {
             match serde_json::from_str::<UserModel>(user.as_str()) {
                 Ok(user_model) => return Ok(user_model),
                 Err(_) => {
-                    log::warn!("Failed to deserialize cached user with email {}", email);
+                    log::warn!("Failed to deserialize cached user with email {email}");
                 }
             }
         }
@@ -89,7 +89,7 @@ impl UserService {
                 match serde_json::to_string(&user) {
                     Ok(cached_response) => {
                         let set_result =
-                            REDIS_SERVICE.set(&cache_key.as_str(), cached_response.as_str());
+                            REDIS_SERVICE.set(cache_key.as_str(), cached_response.as_str());
                         if let Err(e) = set_result {
                             log::warn!("Failed to cache response with email {email} -- Error: {e} ")
                         }
@@ -103,11 +103,11 @@ impl UserService {
                 Ok(user)
             }
             Ok(None) => Err(ErrorResponse {
-                message: format!("User with email {} not found", email),
+                message: format!("User with email {email} not found"),
                 status_code: 404,
             }),
             Err(e) => Err(ErrorResponse {
-                message: format!("Database error: {}", e),
+                message: format!("Database error: {e}"),
                 status_code: 500,
             }),
         }
@@ -124,7 +124,7 @@ impl UserService {
             "users:page:{page}:limit:{limit}:search:{}",
             search.clone().unwrap_or("none".to_string())
         );
-        let cached_response = REDIS_SERVICE.get(&cache_key.as_str());
+        let cached_response = REDIS_SERVICE.get(cache_key.as_str());
         if let Some(response) = cached_response {
             match serde_json::from_str::<Vec<UserModel>>(response.as_str()) {
                 Ok(users) => return Ok(users),
@@ -157,7 +157,7 @@ impl UserService {
                 match serde_json::to_string(&users) {
                     Ok(cached_response) => {
                         let set_result =
-                            REDIS_SERVICE.set(&cache_key.as_str(), cached_response.as_str());
+                            REDIS_SERVICE.set(cache_key.as_str(), cached_response.as_str());
                         if let Err(e) = set_result {
                             log::warn!("Failed to cache response -- Error: {e} ")
                         }
@@ -169,7 +169,7 @@ impl UserService {
                 Ok(users)
             }
             Err(e) => Err(ErrorResponse {
-                message: format!("Database error: {}", e),
+                message: format!("Database error: {e}"),
                 status_code: 500,
             }),
         }
@@ -202,7 +202,7 @@ impl UserService {
         match result {
             Ok(user_result) => Ok(user_result),
             Err(e) => Err(ErrorResponse {
-                message: format!("Database error: {}", e),
+                message: format!("Database error: {e}"),
                 status_code: 500,
             }),
         }
@@ -228,7 +228,7 @@ impl UserService {
             Some(model) => model.into(),
             None => {
                 return Err(ErrorResponse {
-                    message: format!("User with ID {} not found", user_id),
+                    message: format!("User with ID {user_id} not found"),
                     status_code: 404,
                 });
             }
@@ -263,7 +263,7 @@ impl UserService {
         match active_model {
             Ok(updated_user) => Ok(updated_user),
             Err(e) => Err(ErrorResponse {
-                message: format!("Database error: {}", e),
+                message: format!("Database error: {e}"),
                 status_code: 500,
             }),
         }
@@ -278,7 +278,7 @@ impl UserService {
 
         if let Err(e) = user {
             return Err(ErrorResponse {
-                message: format!("Database error: {}", e),
+                message: format!("Database error: {e}"),
                 status_code: 500,
             });
         }
@@ -286,14 +286,14 @@ impl UserService {
         let user = user.unwrap();
         if user.is_none() {
             return Err(ErrorResponse {
-                message: format!("User with ID {} not found", user_id),
+                message: format!("User with ID {user_id} not found"),
                 status_code: 404,
             });
         }
 
         match user.clone().unwrap().delete(connection).await {
             Err(e) => Err(ErrorResponse {
-                message: format!("Database error: {}", e),
+                message: format!("Database error: {e}"),
                 status_code: 500,
             }),
             Ok(_) => {

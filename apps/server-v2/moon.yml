@@ -17,8 +17,10 @@ tasks:
       - "src/**/*"
       - "Cargo.toml"
 
-    # Just smart caching 
+    # Just smart caching
     outputs:
       - "target/release"
   format:
     command: "cargo fmt --all"
+  lint:
+    command: "cargo clippy --fix --lib -p v2 -p migration --tests --allow-dirty"

@@ -75,4 +75,4 @@ impl Settings {
     }
 }
 
-pub static SETTINGS: LazyLock<Settings> = LazyLock::new(|| Settings::load_settings());
+pub static SETTINGS: LazyLock<Settings> = LazyLock::new(Settings::load_settings);

@@ -19,9 +19,8 @@ async fn main() -> Result<(), std::io::Error> {
     match Migrator::up(&db.connection, None).await {
         Ok(_) => log::info!("Database migration completed successfully."),
         Err(e) => {
-            log::error!("Database migration failed: {}", e);
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            log::error!("Database migration failed: {e}");
+            return Err(std::io::Error::other(
                 "Migration failed",
             ));
         }

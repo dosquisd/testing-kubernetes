@@ -32,7 +32,7 @@ pub async fn dispatch_logs(
             .headers()
             .iter()
             .map(|(key, value)| match value.to_str() {
-                Ok(v) => format!("{}: {}", key.to_string(), v.to_string()),
+                Ok(v) => format!("{}: {}", key, v),
                 Err(_) => String::new(),
             })
             .collect(),
@@ -66,11 +66,11 @@ pub async fn dispatch_logs(
             .headers()
             .iter()
             .map(|(key, value)| match value.to_str() {
-                Ok(v) => format!("{}: {}", key.to_string(), v.to_string()),
+                Ok(v) => format!("{}: {}", key, v),
                 Err(_) => String::new(),
             })
             .collect(),
-        process_time: process_time,
+        process_time,
         created_at: created_at.to_rfc3339(),
     };
 
@@ -82,7 +82,7 @@ pub async fn dispatch_logs(
     let result_questdb = send_logs_to_questdb(params);
     match result_questdb {
         Ok(_) => (),
-        Err(e) => log::error!("Error sending logs to QuestDB: {}", e),
+        Err(e) => log::error!("Error sending logs to QuestDB: {e}"),
     };
 
     Ok(response)
