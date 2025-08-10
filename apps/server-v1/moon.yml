@@ -13,3 +13,7 @@ tasks:
     command: "uv run ruff format ."
   lint:
     command: "uv run ruff check ."
+  test:
+    command: "uv run python -m coverage run --source=src -m pytest"
+  coverage-report:
+    command: "uv run python -m coverage report --show-missing"
