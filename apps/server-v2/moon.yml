@@ -9,14 +9,14 @@ project:
   maintainers: ["dosquisd"]
 
 tasks:
+  prepare:
+    command: "cargo install cargo-llvm-cov && rustup component add llvm-tools-preview"
   build:
     command: "cargo build --release"
-
     # This task will be run when detect changes in the following files/directories
     inputs:
       - "src/**/*"
       - "Cargo.toml"
-
     # Just smart caching
     outputs:
       - "target/release"
@@ -24,3 +24,7 @@ tasks:
     command: "cargo fmt --all"
   lint:
     command: "cargo clippy --fix --lib -p v2 -p migration --tests --allow-dirty"
+  test:
+    command: "cargo test --lib -p"
+  coverage:
+    command: "cargo llvm-cov --summary-only -p v2 --lib"

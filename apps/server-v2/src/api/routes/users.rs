@@ -78,7 +78,7 @@ async fn create_user(
     let user = user.into_inner();
     let user_service = UserService {};
     match user_service.create_user(user, &db.connection).await {
-        Ok(id) => Ok(HttpResponse::Created().json(id)),
+        Ok(model) => Ok(HttpResponse::Created().json(model)),
         Err(e) => {
             log::error!("Error creating user: {}", e.message);
             Ok(HttpResponse::InternalServerError().json(e))
