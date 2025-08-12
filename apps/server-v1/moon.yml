@@ -8,7 +8,23 @@ project:
   owner: "dosquisd"
   maintainers: ["dosquisd"]
 
+fileGroups:
+  tests:
+    - "src/tests/*"
+  sources:
+    - "src/**/*"
+  deps:
+    - "pyproject.toml"
+    - "uv.lock"
+
 tasks:
+  build:
+    command: "uv sync"
+    inputs:
+      - "@globs(sources)"
+      - "@globs(deps)"
+  start:
+    command: "uv run python -m src.main"
   format:
     command: "uv run ruff format ."
   lint:

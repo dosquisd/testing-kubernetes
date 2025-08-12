@@ -8,6 +8,16 @@ project:
   owner: "dosquisd"
   maintainers: ["dosquisd"]
 
+fileGroups:
+  tests:
+    - "src/tests/*"
+  sources:
+    - "src/**/*"
+    - "migration/**/*"
+  deps:
+    - "Cargo.toml"
+    - "Cargo.lock"
+
 tasks:
   prepare:
     command: "cargo install cargo-llvm-cov && rustup component add llvm-tools-preview"
@@ -15,16 +25,25 @@ tasks:
     command: "cargo build --release"
     # This task will be run when detect changes in the following files/directories
     inputs:
-      - "src/**/*"
-      - "Cargo.toml"
+      - "@globs(sources)"
+      - "@globs(deps)"
     # Just smart caching
     outputs:
       - "target/release"
+    deps:
+      - "^:prepare"
+  dev:
+    command: "cargo run"
+  start:
+    command: "cargo run --release"
   format:
     command: "cargo fmt --all"
   lint:
     command: "cargo clippy --fix --lib -p v2 -p migration --tests --allow-dirty"
   test:
     command: "cargo test --lib -p"
+    inputs:
+      - "@globs(tests)"
+      - "Cargo.toml"
   coverage:
     command: "cargo llvm-cov --summary-only -p v2 --lib"
