@@ -31,7 +31,7 @@ jobs:
 
       - name: Set image timestamp (UTC-5)
         run: |
-          ts=$(date -u -d '5 hours ago' +"%Y-%m-%d:%H-%M-%S")
+          ts=$(date -u -d '5 hours ago' +"%Y-%m-%d_%H-%M-%S")
           echo "IMAGE_TIMESTAMP=$ts" >> $GITHUB_ENV
 
       - name: Build and push server v1 (multi-arch, cache)
@@ -65,7 +65,7 @@ jobs:
 
       - name: Set image timestamp (UTC-5)
         run: |
-          ts=$(date -u -d '5 hours ago' +"%Y-%m-%d:%H-%M-%S")
+          ts=$(date -u -d '5 hours ago' +"%Y-%m-%d_%H-%M-%S")
           echo "IMAGE_TIMESTAMP=$ts" >> $GITHUB_ENV
 
       - name: Build and push server v2 (multi-arch, cache)
